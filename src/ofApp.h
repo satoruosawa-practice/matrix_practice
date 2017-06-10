@@ -21,6 +21,7 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		
-  ofMesh mesh_;
+  void initMesh(ofMesh * m);
+  ofMesh mesh_roll;
   ofEasyCam cam_;
 };

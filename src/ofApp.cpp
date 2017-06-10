@@ -2,27 +2,31 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-  mesh_.addVertex(ofVec3f(0,0,0));
-  mesh_.addVertex(ofVec3f(100,0,0));
-  mesh_.addVertex(ofVec3f(100,100,0));
-  mesh_.addVertex(ofVec3f(0,100,0));
-  mesh_.addIndex(0);
-  mesh_.addIndex(1);
-  mesh_.addIndex(2);
-  mesh_.addIndex(0);
-  mesh_.addIndex(2);
-  mesh_.addIndex(3);
-  
+  initMesh(&mesh_roll);
+}
+
+void ofApp::initMesh(ofMesh * m) {
+  m->addVertex(ofVec3f(0,0,0));
+  m->addVertex(ofVec3f(100,0,0));
+  m->addVertex(ofVec3f(100,100,0));
+  m->addVertex(ofVec3f(0,100,0));
+  m->addIndex(0);
+  m->addIndex(1);
+  m->addIndex(2);
+  m->addIndex(0);
+  m->addIndex(2);
+  m->addIndex(3);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-  ofMatrix4x4 mat4 = ofMatrix4x4(1.001, 0, 0, 0,
-                                 0, 1.001, 0, 0,
-                                 0, 0, 1.001, 0,
+  float theta = ofDegToRad(0.1);
+  ofMatrix4x4 mat4 = ofMatrix4x4(cos(theta), -sin(theta), 0, 0,
+                                 sin(theta), cos(theta), 0, 0,
+                                 0, 0, 1, 0,
                                  0, 0, 0, 1);
-  for (int i = 0; i < mesh_.getNumVertices(); i++){
-    mesh_.setVertex(i, mat4 * mesh_.getVertex(i));
+  for (int i = 0; i < mesh_roll.getNumVertices(); i++){
+    mesh_roll.setVertex(i, mat4 * mesh_roll.getVertex(i));
   }
 
 }
@@ -31,8 +35,7 @@ void ofApp::update(){
 void ofApp::draw(){
   cam_.begin(); {
     ofDrawAxis(100);
-    mesh_.draw();
-//    mesh_.drawWireframe();
+    mesh_roll.draw();
   } cam_.end();
 }
 
