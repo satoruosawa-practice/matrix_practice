@@ -7,20 +7,21 @@
 void ofApp::setup(){
   initMesh(&mesh_);
   
-  float theta = ofDegToRad(1);
+//  float theta = ofDegToRad(1);
+  float theta = 1.0f;
   
   ofVec3f axis = ofVec3f(1, 1, 1);
   axis.normalize();
-  
-  qt_ = ofVec4f(axis.x * sin(theta / 2.0f),
-                       axis.y * sin(theta / 2.0f),
-                       axis.z * sin(theta / 2.0f),
-                       cos(theta / 2.0f));
-  qt_con_ = ofVec4f(-axis.x * sin(theta / 2.0f),
-                           -axis.y * sin(theta / 2.0f),
-                           -axis.z * sin(theta / 2.0f),
-                           cos(theta / 2.0f));
-  
+  qt_ = ofQuaternion(theta, axis);
+
+//  qt_ = ofVec4f(axis.x * sin(theta / 2.0f),
+//                       axis.y * sin(theta / 2.0f),
+//                       axis.z * sin(theta / 2.0f),
+//                       cos(theta / 2.0f));
+//  qt_con_ = ofVec4f(-axis.x * sin(theta / 2.0f),
+//                           -axis.y * sin(theta / 2.0f),
+//                           -axis.z * sin(theta / 2.0f),
+//                           cos(theta / 2.0f));
 }
 
 ofVec4f ofApp::hamilton(const ofVec4f &a_vec4, const ofVec4f &b_vec4) {
@@ -36,10 +37,10 @@ ofVec4f ofApp::hamilton(const ofVec4f &a_vec4, const ofVec4f &b_vec4) {
 }
 
 void ofApp::initMesh(ofMesh * m) {
-  m->addVertex(ofVec4f(0,0,0,1));
-  m->addVertex(ofVec4f(100,0,0,1));
-  m->addVertex(ofVec4f(100,100,0,1));
-  m->addVertex(ofVec4f(0,100,0,1));
+  m->addVertex(ofVec3f(0,0,0));
+  m->addVertex(ofVec3f(100,0,0));
+  m->addVertex(ofVec3f(100,100,0));
+  m->addVertex(ofVec3f(0,100,0));
   m->addIndex(0);
   m->addIndex(1);
   m->addIndex(2);
@@ -51,10 +52,8 @@ void ofApp::initMesh(ofMesh * m) {
 //--------------------------------------------------------------
 void ofApp::update(){
   for (int i = 0; i < mesh_.getNumVertices(); i++){
-    ofVec4f temp = hamilton(qt_, mesh_.getVertex(i));
-    mesh_.setVertex(i, hamilton(temp, qt_con_));
+    mesh_.setVertex(i, qt_ * mesh_.getVertex(i));
   }
-
 }
 
 //--------------------------------------------------------------
