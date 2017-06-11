@@ -23,5 +23,7 @@ class ofApp : public ofBaseApp{
 		
   void initMesh(ofMesh * m);
   ofMesh mesh_roll;
+  ofMesh mesh_pitch;
+  ofMesh mesh_yaw;
   ofEasyCam cam_;
 };
