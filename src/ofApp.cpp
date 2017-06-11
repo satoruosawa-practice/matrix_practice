@@ -1,17 +1,49 @@
 #include "ofApp.h"
 
+// ref URL
+// http://qiita.com/kenjihiranabe/items/945232fbde58fab45681
+
 //--------------------------------------------------------------
 void ofApp::setup(){
-  initMesh(&mesh_roll);
-  initMesh(&mesh_pitch);
-  initMesh(&mesh_yaw);
+  initMesh(&mesh_);
+  
+  float theta = ofDegToRad(240);
+  
+  ofVec3f axis = ofVec3f(1, 1, 1);
+  axis.normalize();
+  
+  ofVec4f qt = ofVec4f(axis.x * sin(theta / 2.0f),
+                       axis.y * sin(theta / 2.0f),
+                       axis.z * sin(theta / 2.0f),
+                       cos(theta / 2.0f));
+  ofVec4f qt_con = ofVec4f(-axis.x * sin(theta / 2.0f),
+                           -axis.y * sin(theta / 2.0f),
+                           -axis.z * sin(theta / 2.0f),
+                           cos(theta / 2.0f));
+  
+  for (int i = 0; i < mesh_.getNumVertices(); i++){
+    ofVec4f temp = hamilton(qt, mesh_.getVertex(i));
+    mesh_.setVertex(i, hamilton(temp, qt_con));
+  }
+}
+
+ofVec4f ofApp::hamilton(const ofVec4f &a_vec4, const ofVec4f &b_vec4) {
+  ofVec3f a_vec3 = ofVec3f(a_vec4.x, a_vec4.y, a_vec4.z);
+  ofVec3f b_vec3 = ofVec3f(b_vec4.x, b_vec4.y, b_vec4.z);
+  
+  ofVec3f term1 = a_vec3.getCrossed(b_vec3) +
+                  b_vec4.w * a_vec3 +
+                  a_vec4.w * b_vec3;
+  float term2 = a_vec4.w * b_vec4.w
+                - a_vec3.dot(b_vec3);
+  return ofVec4f(term1.x, term1.y, term1.z, term2);
 }
 
 void ofApp::initMesh(ofMesh * m) {
-  m->addVertex(ofVec3f(0,0,0));
-  m->addVertex(ofVec3f(100,0,0));
-  m->addVertex(ofVec3f(100,100,0));
-  m->addVertex(ofVec3f(0,100,0));
+  m->addVertex(ofVec4f(0,0,0,1));
+  m->addVertex(ofVec4f(100,0,0,1));
+  m->addVertex(ofVec4f(100,100,0,1));
+  m->addVertex(ofVec4f(0,100,0,1));
   m->addIndex(0);
   m->addIndex(1);
   m->addIndex(2);
@@ -22,41 +54,13 @@ void ofApp::initMesh(ofMesh * m) {
 
 //--------------------------------------------------------------
 void ofApp::update(){
-  float theta = ofDegToRad(0.1);
-  ofMatrix4x4 roll = ofMatrix4x4(cos(theta), -sin(theta), 0, 0,
-                                 sin(theta), cos(theta), 0, 0,
-                                 0, 0, 1, 0,
-                                 0, 0, 0, 1);
-  for (int i = 0; i < mesh_roll.getNumVertices(); i++){
-    mesh_roll.setVertex(i, roll * mesh_roll.getVertex(i));
-  }
-  ofMatrix4x4 pitch = ofMatrix4x4(1, 0, 0, 0,
-                                  0, cos(theta), -sin(theta), 0,
-                                 0, sin(theta), cos(theta), 0,
-                                 0, 0, 0, 1);
-  for (int i = 0; i < mesh_pitch.getNumVertices(); i++){
-    mesh_pitch.setVertex(i, pitch * mesh_pitch.getVertex(i));
-  }
-  ofMatrix4x4 yaw = ofMatrix4x4(cos(theta), 0, sin(theta), 0,
-                                0, 1, 0, 0,
-                                -sin(theta), 0, cos(theta), 0,
-                                0, 0, 0, 1);
-  for (int i = 0; i < mesh_yaw.getNumVertices(); i++){
-    mesh_yaw.setVertex(i, yaw * mesh_yaw.getVertex(i));
-  }
-
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
   cam_.begin(); {
     ofDrawAxis(100);
-    ofSetColor(255, 0, 0);
-    mesh_roll.draw();
-    ofSetColor(0, 255, 0);
-    mesh_pitch.draw();
-    ofSetColor(0, 0, 255);
-    mesh_yaw.draw();
+    mesh_.draw();
   } cam_.end();
 }
 

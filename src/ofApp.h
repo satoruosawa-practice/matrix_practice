@@ -22,8 +22,8 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 		
   void initMesh(ofMesh * m);
-  ofMesh mesh_roll;
-  ofMesh mesh_pitch;
-  ofMesh mesh_yaw;
+  ofVec4f hamilton(const ofVec4f &a, const ofVec4f &b);
+  
+  ofMesh mesh_;
   ofEasyCam cam_;
 };
