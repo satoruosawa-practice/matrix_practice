@@ -26,4 +26,7 @@ class ofApp : public ofBaseApp{
   
   ofMesh mesh_;
   ofEasyCam cam_;
+  
+  ofVec4f qt_;
+  ofVec4f qt_con_;
 };
